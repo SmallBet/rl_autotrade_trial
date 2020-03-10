@@ -102,13 +102,11 @@ model = Sequential()
 #model.add(Dropout(dropout))
 #model.add(Conv1D(filters=8, kernel_size=window,use_bias = True,padding='same', activation=activation_func, input_shape=(window,state_size)))
 #model.add(BatchNormalization())
-#model.add(LSTM(128,activation=activation_func,input_shape=(window,state_size),return_sequences=True))
-#model.add(Dropout(dropout))
-#model.add(LSTM(128,activation=activation_func,input_shape=(window,state_size),return_sequences=False))
-#model.add(Dropout(dropout))
-model.add(Flatten(input_shape=(window,state_size) ))
-#model.add(Conv1D(filters=8, kernel_size=window,use_bias = True,padding='same', activation=activation_func, input_shape=(state_size)))
-model.add(Dense(640,activation=activation_func))
+model.add(LSTM(128,activation=activation_func,input_shape=(window,state_size),return_sequences=True))
+model.add(Dropout(dropout))
+model.add(LSTM(128,activation=activation_func,input_shape=(window,state_size),return_sequences=False))
+model.add(Dropout(dropout))
+model.add(Dense(128,activation=activation_func))
 model.add(Dense(64,activation=activation_func))
 model.add(Dense(32,activation=activation_func))
 model.add(Dense(num_actions,activation='linear'))
@@ -130,11 +128,11 @@ model = Model(inputs=[action_input, observation_input], outputs=x)
 '''
 train_ratio = 0.1
 train_start = 0
-train_end = 1000
+train_end = 1700
 test_end = 2000
 
 
-env = rl_test_env.LeveragingEnv(data,original_data,1.0,100.0,2,2)
+env = rl_test_env.LeveragingEnv(data,original_data,1.0,100.0,2,3)
 env.set_train_ratio(train_ratio)
 memory = SequentialMemory(limit=50000, window_length=window)
 policy = LinearAnnealedPolicy(EpsGreedyQPolicy(), attr='eps', value_max=1., value_min=.1, value_test=.05, nb_steps=5000)
@@ -148,7 +146,7 @@ if model_exist:
 	dqn.policy = LinearAnnealedPolicy(EpsGreedyQPolicy(), attr='eps', value_max=.5, value_min=.1, value_test=.05, nb_steps=5000)
 	
 env.set_data_interval(train_start,train_end)
-train_history = dqn.fit(env, nb_steps=100000,visualize=False,verbose=2)
+train_history = dqn.fit(env, nb_steps=5000,visualize=False,verbose=2,action_repetition=5)
 env.set_data_interval(train_start,test_end)
 print('Whole')
 train_history = dqn.test(env,nb_episodes=2)
