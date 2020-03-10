@@ -5,8 +5,13 @@ import matplotlib.pyplot as plt2
 import numpy
 import numpy as np
 import math
-import keras.models as models
+
+import plaidml.keras
+plaidml.keras.install_backend()
+import os
+os.environ["KERAS_BACKEND"] = "plaidml.keras.backend"
 from keras import Model
+import keras.models as models
 from keras import Input
 from keras.models import Sequential
 from keras.layers import Dense
@@ -46,17 +51,9 @@ from data_parse import parse_multiple_csv
 from data_parse import parse_diff
 from data_parse import parse_combine
 from keras import backend as K
-import tensorflow as tf
+print(K)
 
-cluster = tf.contrib.cluster_resolver.TPUClusterResolver(
-  tpu='node-1',
-  zone='asia-east1-c',
-  project='primeval-door-263212')
 
-#config = tf.contrib.tpu.RunConfig(cluster=cluster)
-config=tf.ConfigProto(intra_op_parallelism_threads=12, inter_op_parallelism_threads=12, allow_soft_placement=True, device_count = {'CPU': 1})
-session = tf.Session(config=config)
-K.set_session(session)
 
 
 
