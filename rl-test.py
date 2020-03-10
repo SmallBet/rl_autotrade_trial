@@ -6,10 +6,7 @@ import numpy
 import numpy as np
 import math
 
-import plaidml.keras
-plaidml.keras.install_backend()
-import os
-os.environ["KERAS_BACKEND"] = "plaidml.keras.backend"
+ 
 from keras import Model
 import keras.models as models
 from keras import Input

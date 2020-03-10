@@ -4,28 +4,30 @@ import matplotlib.pyplot as plt
 import matplotlib.pyplot as plt2
 import numpy
 import numpy as np
+import tensorflow as tf
 import math
-import plaidml.keras
-plaidml.keras.install_backend()
-import os
-os.environ["KERAS_BACKEND"] = "plaidml.keras.backend"
-from keras import Model
-import keras.models as models
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.layers import LSTM
-from keras.layers import Dropout
-from keras.layers import Conv1D
-from keras.layers import ConvLSTM2D
-from keras.layers import GRU
-from keras.layers import Flatten
-from keras.layers import GaussianNoise
-from keras.layers import AveragePooling1D
-from keras.layers import TimeDistributed
-from keras.layers.normalization import BatchNormalization
-from keras import optimizers
-from keras import losses
-from keras.models import load_model
+if_amd = False
+if if_amd == True:
+        import plaidml.tensorflow.keras
+        plaidml.tensorflow.keras.install_backend()
+        import os
+        os.environ["KERAS_BACKEND"] = "plaidml.tensorflow.keras.backend"
+from tensorflow.keras import Model
+import tensorflow.keras.models as models
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import LSTM
+from tensorflow.keras.layers import Dropout
+from tensorflow.keras.layers import Conv1D
+from tensorflow.keras.layers import ConvLSTM2D
+from tensorflow.keras.layers import GRU
+from tensorflow.keras.layers import Flatten
+from tensorflow.keras.layers import GaussianNoise
+from tensorflow.keras.layers import AveragePooling1D
+from tensorflow.keras.layers import TimeDistributed
+from tensorflow.keras import optimizers
+from tensorflow.keras import losses
+from tensorflow.keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error
 import os.path
@@ -42,7 +44,8 @@ def conv(val):
         return 0 # or whatever else you want to represent your NaN with
     return val
 
- 
+
+
 #plt.show()
 numpy.random.seed(7)
 
@@ -183,13 +186,11 @@ dropout = 0.1
 noise_level = 0.0001
 if(model_exist == False):
 	model = Sequential()
-	model.name = 'actual_predict'
 	model.add(LSTM(128,activation='relu',input_shape=(window,amount_of_features),return_sequences=True))
 	model.add(TimeDistributed(Dense(activation='relu', units=64)))
 	model.add(Dropout(dropout))
 	#model.add(ConvLSTM2D(filters=40, kernel_size=(3, 3),input_shape=(window,amount_of_features),padding='same', return_sequences=True))
 	model.add(Conv1D(filters=128, kernel_size=window,use_bias = True, activation='relu', input_shape=(window,amount_of_features)))
-	model.add(BatchNormalization())
 	model.add(LSTM(512,activation='relu',input_shape=(window,amount_of_features),return_sequences=True))
 	model.add(TimeDistributed(Dense(activation='relu', units=64)))
 	model.add(Dropout(dropout))
@@ -213,7 +214,7 @@ adam = optimizers.Adam(lr=0.001)
 sgd  = optimizers.SGD(lr=0.001)
 rmsprop  = optimizers.RMSprop(lr=0.0001)
 
-model.optimizer = rmsprop
+model.optimizer = adam
 
 #print(model.summary())
 
